@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const server = require("./socket");
+// const server = require("./socket");
 const dotenv = require("dotenv");
 
 dotenv.config({
