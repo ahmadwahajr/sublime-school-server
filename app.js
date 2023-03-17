@@ -17,7 +17,7 @@ const corsOptions = {
   origin: [
     "localhost:3001",
     "http://localhost:3000",
-    "https://sublime.cyclic.app/"
+    "https://sublime-school.netlify.app/"
   ],
   optionsSuccessStatus: 200, // For legacy browser support
   methods: "GET, PUT, POST, DELETE"
