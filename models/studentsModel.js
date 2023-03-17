@@ -67,7 +67,7 @@ const studentSchema = new mongoose.Schema(
     createdAt: "created_at",
     updatedAt: "updated_at"
   }
-).index({ rollNo: 1, classNo: 1 }, { unique: true });
+).index({ rollNo: 1, classNo: 1, enrolledIn: 1 }, { unique: true });
 
 const Student = mongoose.model("Student", studentSchema);
 
