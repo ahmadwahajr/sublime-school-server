@@ -6,7 +6,7 @@ const xss = require("xss-clean");
 const hpp = require("hpp");
 const cors = require("cors");
 const globalErrHandler = require("./controllers/errorController");
-
+const mongoose = require("mongoose");
 const userRoutes = require("./routes/userRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 const feeRoutes = require("./routes/feeRoutes");
@@ -14,11 +14,7 @@ const AppError = require("./utils/appError");
 const app = express();
 
 const corsOptions = {
-  origin: [
-    "localhost:3001",
-    "http://localhost:3000",
-    "https://sublime-school.netlify.app/"
-  ],
+  origin: ["http://localhost:3000", "https://sublime-school.netlify.app"],
   optionsSuccessStatus: 200, // For legacy browser support
   methods: "GET, PUT, POST, DELETE"
 };
@@ -44,9 +40,9 @@ app.use(xss());
 // Prevent parameter pollution
 app.use(hpp());
 
-const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 mongoose.set("debug", true);
+mongoose.set("strictQuery", true);
 // Routes
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/students", studentRoutes);
