@@ -39,12 +39,7 @@ exports.login = async (req, res, next) => {
     }).select("+password");
 
     if (!user || !(await user.correctPassword(password, user.password))) {
-      return next(
-        new AppError(401, "fail", "Email or Password is wrong"),
-        req,
-        res,
-        next
-      );
+      return next(new Error("Username or Password is wrong"));
     }
     // await User.findByIdAndUpdate(user._id, { isActive: true, loginTime: new Date() });
 
@@ -80,7 +75,7 @@ exports.signup = async (req, res, next) => {
     console.log(req.body);
     const inputs = req.body;
     const { error, value } = schema.validate({
-      ...inputs,
+      ...inputs
     });
     if (error) {
       return res.status(201).json(error);

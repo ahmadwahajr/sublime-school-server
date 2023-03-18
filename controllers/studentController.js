@@ -21,7 +21,6 @@ exports.addStudent = async (req, res, next) => {
     !rollNo ||
     !admissionDate ||
     !phoneNo1 ||
-    !phoneNo2 ||
     !classNo ||
     !batch ||
     !dubata ||
@@ -59,6 +58,7 @@ exports.addStudent = async (req, res, next) => {
       }
     }
   } catch (error) {
+    console.log(error);
     next(new Error("Something went wrong"));
   }
 };
