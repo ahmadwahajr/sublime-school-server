@@ -14,6 +14,28 @@ const feeSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  date: {
+    type: String,
+    required: true
+  },
+  payment: {
+    schoolFee: {
+      type: Number
+    },
+    syllabusFee: {
+      type: Number
+    },
+    annualFee: {
+      type: Number
+    },
+    registrationFee: {
+      type: Number
+    },
+    lateFine: {
+      type: Number
+    }
+  },
+
   isPaid: {
     type: Boolean,
     default: false

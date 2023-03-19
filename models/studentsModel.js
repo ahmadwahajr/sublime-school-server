@@ -46,18 +46,33 @@ const studentSchema = new mongoose.Schema(
     },
     fee: {
       schoolFee: {
-        type: String,
-        required: true
+        type: Number
       },
       syllabusFee: {
-        type: String,
-        required: true
+        type: Number
       },
       annualFee: {
-        type: String
+        type: Number
       },
       registrationFee: {
-        type: String
+        type: Number
+      }
+    },
+    balance: {
+      schoolFee: {
+        type: Number
+      },
+      syllabusFee: {
+        type: Number
+      },
+      annualFee: {
+        type: Number
+      },
+      registrationFee: {
+        type: Number
+      },
+      lateFine: {
+        type: Number
       }
     }
   },

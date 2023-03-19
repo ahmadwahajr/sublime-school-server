@@ -8,6 +8,7 @@ router.use(middleware.protect);
 router.post("/add-student", studentController.addStudent);
 router.post("/update-student", studentController.updateStudent);
 router.post("/delete-student", studentController.deleteStudent);
+router.post("/pay-fee", studentController.payFee);
 router.get("/get-students", studentController.getStudents);
 
 module.exports = router;

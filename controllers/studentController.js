@@ -27,38 +27,29 @@ exports.addStudent = async (req, res, next) => {
     !fee
   )
     next(new Error("Invalid Data"));
+  const input = { ...req.body, balance: { ...req.body.fee, lateFine: 0 } };
+  console.log("INPUT:", input);
   try {
-    const exist = await Student.exists({
-      classNo: classNo,
-      rollNo: rollNo,
-      enrolledIn: enrolledIn
-    });
-    if (exist) {
-      next(new Error("Roll No Already Exists"));
-      return;
-    }
     const student = await Student.create({
-      ...req.body,
+      ...input,
       admissionDate: new Date(req.body.admissionDate)
     });
 
     if (student) {
-      const month = new Date().getMonth();
-      const year = new Date().getFullYear();
+      // const month = new Date().getMonth();
+      // const year = new Date().getFullYear();
+      // const data = await feeHelper.createFee(student._id, month, year);
 
-      const data = await feeHelper.createFee(student._id, month, year);
+      const feeDetails = await feeHelper.getFee(student._id);
 
-      if (data) {
-        const feeDetails = await feeHelper.getFee(student._id);
-        let studentWithFee = { studentData: student, feeDetails };
-        res.status(200).json({
-          status: "success",
-          data: studentWithFee
-        });
-      }
+      let studentWithFee = { studentData: student, feeDetails };
+      res.status(200).json({
+        status: "success",
+        data: studentWithFee
+      });
     }
   } catch (error) {
-    console.log(error);
+    if (error?.code === 11000) next(new Error("Roll no already exists!"));
     next(new Error("Something went wrong"));
   }
 };
@@ -114,6 +105,39 @@ exports.updateStudent = async (req, res, next) => {
     next(new Error("Something went wrong"));
   }
 };
+exports.payFee = async (req, res, next) => {
+  const { schoolFee, syllabusFee, annualFee, registrationFee } =
+    req.body.balance;
+  console.log(schoolFee, syllabusFee, annualFee, registrationFee);
+  try {
+    let data = await Student.findByIdAndUpdate(
+      req.body._id,
+      {
+        $inc: {
+          "balance.schoolFee": -schoolFee,
+          "balance.syllabusFee": -syllabusFee,
+          "balance.annualFee": -annualFee,
+          "balance.registrationFee": -registrationFee
+          // "balance.lateFine": -lateFine
+        }
+      },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
+    if (data)
+      return res.status(200).json({
+        status: "success",
+        data
+      });
+    else {
+      next(new Error("Something went wrong!"));
+    }
+  } catch (err) {
+    next(new Error("Something went wrong"));
+  }
+};
 exports.deleteStudent = async (req, res, next) => {
   try {
     let doc = await Student.findByIdAndRemove(req.body._id);
@@ -126,6 +150,7 @@ exports.deleteStudent = async (req, res, next) => {
       }
     });
   } catch (err) {
+    if (error?.code === 11000) next(new Error("Roll no already exists!"));
     next(new Error("Something went wrong"));
   }
 };
