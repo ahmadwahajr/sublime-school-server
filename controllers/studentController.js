@@ -136,7 +136,8 @@ exports.payFee = async (req, res, next) => {
       if (payFee) {
         return res.status(200).json({
           status: "success",
-          data
+          studentData: data,
+          feeDetails: payFee
         });
       } else {
         next(new Error("Fee Paid but not added to history!"));

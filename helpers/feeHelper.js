@@ -6,7 +6,7 @@ exports.createFee = async req => {
     const fee = await Fee.create({
       ...req
     });
-    if (fee) return true;
+    if (fee) return fee;
   } catch (error) {
     console.log("ERROR: ", error);
     return false;
@@ -17,12 +17,16 @@ exports.removeFee = async studentId => {
     const fee = await Fee.deleteMany({
       student: studentId
     });
-    if (fee) return true;
+    if (fee) return fee;
   } catch (error) {
     return false;
   }
 };
 
-// exports.getFee = async studentId => {
-//   return Fee.findOne({ student: studentId });
-// };
+exports.getFee = async studentId => {
+  return Fee.findOne({
+    student: studentId,
+    month: new Date().getMonth(),
+    year: new Date().getFullYear()
+  });
+};
