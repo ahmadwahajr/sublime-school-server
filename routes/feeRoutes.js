@@ -8,6 +8,6 @@ router.use(middleware.protect);
 router.post("/toggle-fee", feeController.toggleFee);
 // router.post("/update-student", studentController.updateStudent);
 // router.post("/delete-student", studentController.deleteStudent);
-// router.get("/get-students", studentController.getStudents);
+router.get("/get-fee", feeController.getFeeHistory);
 
 module.exports = router;

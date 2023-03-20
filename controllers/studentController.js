@@ -36,10 +36,6 @@ exports.addStudent = async (req, res, next) => {
     });
 
     if (student) {
-      // const month = new Date().getMonth();
-      // const year = new Date().getFullYear();
-      // const data = await feeHelper.createFee(student._id, month, year);
-
       const feeDetails = await feeHelper.getFee(student._id);
 
       let studentWithFee = { studentData: student, feeDetails };
@@ -106,9 +102,9 @@ exports.updateStudent = async (req, res, next) => {
   }
 };
 exports.payFee = async (req, res, next) => {
-  const { schoolFee, syllabusFee, annualFee, registrationFee } =
+  const { schoolFee, syllabusFee, annualFee, registrationFee, lateFine } =
     req.body.balance;
-  console.log(schoolFee, syllabusFee, annualFee, registrationFee);
+  console.log(schoolFee, syllabusFee, annualFee, registrationFee, lateFine);
   try {
     let data = await Student.findByIdAndUpdate(
       req.body._id,
@@ -117,8 +113,8 @@ exports.payFee = async (req, res, next) => {
           "balance.schoolFee": -schoolFee,
           "balance.syllabusFee": -syllabusFee,
           "balance.annualFee": -annualFee,
-          "balance.registrationFee": -registrationFee
-          // "balance.lateFine": -lateFine
+          "balance.registrationFee": -registrationFee,
+          "balance.lateFine": -lateFine
         }
       },
       {
@@ -126,16 +122,30 @@ exports.payFee = async (req, res, next) => {
         runValidators: true
       }
     );
-    if (data)
-      return res.status(200).json({
-        status: "success",
-        data
-      });
-    else {
-      next(new Error("Something went wrong!"));
+    if (data) {
+      const feeHistoryData = {
+        student: req.body._id,
+        month: new Date().getMonth(),
+        date: new Date().getDate(),
+        year: new Date().getFullYear(),
+        payment: req.body.balance,
+        isPaid: true
+      };
+
+      const payFee = await feeHelper.createFee(feeHistoryData);
+      if (payFee) {
+        return res.status(200).json({
+          status: "success",
+          data
+        });
+      } else {
+        next(new Error("Fee Paid but not added to history!"));
+      }
+    } else {
+      next(new Error("Error in Fee Payment!"));
     }
   } catch (err) {
-    next(new Error("Something went wrong"));
+    next(new Error("Internal Error!"));
   }
 };
 exports.deleteStudent = async (req, res, next) => {

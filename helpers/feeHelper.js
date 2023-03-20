@@ -1,20 +1,14 @@
 const { Fee } = require("../models/feeModel");
 const AppError = require("../utils/appError");
-exports.createFee = async (studentId, month, year) => {
+exports.createFee = async req => {
+  console.log("REQUEST:", req);
   try {
-    const exists = await Fee.exists({
-      student: studentId,
-      month: month,
-      year: year
-    });
-    if (exists) return true;
     const fee = await Fee.create({
-      student: studentId,
-      month: month,
-      year: year
+      ...req
     });
     if (fee) return true;
   } catch (error) {
+    console.log("ERROR: ", error);
     return false;
   }
 };
@@ -29,6 +23,6 @@ exports.removeFee = async studentId => {
   }
 };
 
-exports.getFee = async studentId => {
-  return Fee.findOne({ student: studentId });
-};
+// exports.getFee = async studentId => {
+//   return Fee.findOne({ student: studentId });
+// };
