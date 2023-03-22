@@ -1,4 +1,4 @@
-const { Fee } = require("../models/feeModel");
+const { Fee } = require("../models/feeHistoryModel");
 const AppError = require("../utils/appError");
 exports.toggleFee = async (req, res, next) => {
   const { month, year, id, isPaid } = req.body;
