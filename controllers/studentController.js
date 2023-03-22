@@ -21,13 +21,17 @@ exports.addStudent = async (req, res, next) => {
     !admissionDate ||
     !phoneNo1 ||
     !classNo ||
-    !fee||
-    !balance||
+    !fee ||
+    !balance ||
     !enrolledIn
   )
     next(new Error("Invalid Data"));
-  const input = { ...req.body, balance: { ...req.body.fee, lateFine: 0 , ...req.body.balance} };
-  console.log("INPUT:", input);
+  let input = {
+    ...req.body,
+    balance: { ...req.body.fee, lateFine: 0, ...req.body.balance }
+  };
+  if (req?.body?.fee?.testSessionFee) input.balance.testSessionFee = 0;
+
   try {
     const student = await Student.create({
       ...input,
@@ -37,7 +41,7 @@ exports.addStudent = async (req, res, next) => {
     if (student) {
       //const feeDetails = await feeHelper.getFee(student._id);
 
-      let studentWithFee = { studentData: student, feeDetails:{}};
+      let studentWithFee = { studentData: student, feeDetails: {} };
       res.status(200).json({
         status: "success",
         data: studentWithFee
@@ -101,23 +105,45 @@ exports.updateStudent = async (req, res, next) => {
   }
 };
 exports.payFee = async (req, res, next) => {
-  const {  tutionFee , syllabusFee, annualFee, registrationFee, lateFine,notesBalance, missalaneousBalance , testSessionFee , discountFee
-   } = req.body.balance;
-  console.log( tutionFee , syllabusFee, annualFee, registrationFee, lateFine,notesBalance, missalaneousBalance , testSessionFee , discountFee);
+  const {
+    tutionFee,
+    syllabusFee,
+    annualFee,
+    registrationFee,
+    lateFine,
+    notesBalance,
+    missalaneousBalance,
+    testSessionFee,
+    discountFee
+  } = req.body.balance;
+  console.log(
+    tutionFee,
+    syllabusFee,
+    annualFee,
+    registrationFee,
+    lateFine,
+    notesBalance,
+    missalaneousBalance,
+    testSessionFee,
+    discountFee
+  );
   try {
     let data = await Student.findByIdAndUpdate(
       req.body._id,
       {
         $inc: {
-          ...(tutionFee && {"balance.tutionFee" : -tutionFee}),
-          ...(syllabusFee && {"balance.syllabusFee" : -syllabusFee}),
-          ...(registrationFee && {"balance.syllabusFee" : -registrationFee}),
-          ...(lateFine && {"balance.syllabusFee" : -lateFine}),
-          ...(notesBalance && {"balance.syllabusFee" : -notesBalance}),
-          ...(missalaneousBalance && {"balance.syllabusFee" : -registrationFee}),
-          ...(testSessionFee && {"balance.syllabusFee" : -registrationFee}),
-          ...(discountFee && {"balance.syllabusFee" : -discountFee})
-
+          ...(tutionFee && { "balance.tutionFee": -tutionFee }),
+          ...(syllabusFee && { "balance.syllabusFee": -syllabusFee }),
+          ...(registrationFee && {
+            "balance.registrationFee": -registrationFee
+          }),
+          ...(lateFine && { "balance.lateFine": -lateFine }),
+          ...(notesBalance && { "balance.notesBalancec": -notesBalance }),
+          ...(missalaneousBalance && {
+            "balance.missalaneousBalance": -missalaneousBalance
+          }),
+          ...(testSessionFee && { "balance.testSessionFee": -testSessionFee }),
+          ...(discountFee && { "balance.discountFee": -discountFee })
         }
       },
       {

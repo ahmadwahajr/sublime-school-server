@@ -45,7 +45,7 @@ const studentSchema = new mongoose.Schema(
       required: true
     },*/
     fee: {
-      tutionFee:{
+      tutionFee: {
         type: Number
       },
       syllabusFee: {
@@ -54,15 +54,13 @@ const studentSchema = new mongoose.Schema(
       annualFee: {
         type: Number
       },
-      registrationFee: {
-        type: Number
-      },
-      testSessionFee:{
+
+      testSessionFee: {
         type: Number
       }
     },
     balance: {
-      tutionFee:{
+      tutionFee: {
         type: Number
       },
       syllabusFee: {
@@ -77,7 +75,7 @@ const studentSchema = new mongoose.Schema(
       lateFine: {
         type: Number
       },
-      notesBalance:{
+      notesBalance: {
         type: Number
       },
       missalaneousBalance: {
@@ -86,7 +84,7 @@ const studentSchema = new mongoose.Schema(
       registrationFee: {
         type: Number
       },
-      testSessionFee:{
+      testSessionFee: {
         type: Number
       }
     }
