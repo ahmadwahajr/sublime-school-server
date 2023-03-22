@@ -10,9 +10,8 @@ exports.addStudent = async (req, res, next) => {
     phoneNo1,
     phoneNo2,
     classNo,
-    batch,
-    dubata,
     fee,
+    balance,
     enrolledIn
   } = req.body;
   if (
@@ -22,13 +21,17 @@ exports.addStudent = async (req, res, next) => {
     !admissionDate ||
     !phoneNo1 ||
     !classNo ||
-    !batch ||
-    !dubata ||
-    !fee
+    !fee ||
+    !balance ||
+    !enrolledIn
   )
     next(new Error("Invalid Data"));
-  const input = { ...req.body, balance: { ...req.body.fee, lateFine: 0 } };
-  console.log("INPUT:", input);
+  let input = {
+    ...req.body,
+    balance: { ...req.body.fee, lateFine: 0, ...req.body.balance }
+  };
+  if (req?.body?.fee?.testSessionFee) input.balance.testSessionFee = 0;
+
   try {
     const student = await Student.create({
       ...input,
@@ -36,9 +39,9 @@ exports.addStudent = async (req, res, next) => {
     });
 
     if (student) {
-      const feeDetails = await feeHelper.getFee(student._id);
+      //const feeDetails = await feeHelper.getFee(student._id);
 
-      let studentWithFee = { studentData: student, feeDetails };
+      let studentWithFee = { studentData: student, feeDetails: {} };
       res.status(200).json({
         status: "success",
         data: studentWithFee
@@ -102,19 +105,45 @@ exports.updateStudent = async (req, res, next) => {
   }
 };
 exports.payFee = async (req, res, next) => {
-  const { schoolFee, syllabusFee, annualFee, registrationFee, lateFine } =
-    req.body.balance;
-  console.log(schoolFee, syllabusFee, annualFee, registrationFee, lateFine);
+  const {
+    tutionFee,
+    syllabusFee,
+    annualFee,
+    registrationFee,
+    lateFine,
+    notesBalance,
+    missalaneousBalance,
+    testSessionFee,
+    discountFee
+  } = req.body.balance;
+  console.log(
+    tutionFee,
+    syllabusFee,
+    annualFee,
+    registrationFee,
+    lateFine,
+    notesBalance,
+    missalaneousBalance,
+    testSessionFee,
+    discountFee
+  );
   try {
     let data = await Student.findByIdAndUpdate(
       req.body._id,
       {
         $inc: {
-          "balance.schoolFee": -schoolFee,
-          "balance.syllabusFee": -syllabusFee,
-          "balance.annualFee": -annualFee,
-          "balance.registrationFee": -registrationFee,
-          "balance.lateFine": -lateFine
+          ...(tutionFee && { "balance.tutionFee": -tutionFee }),
+          ...(syllabusFee && { "balance.syllabusFee": -syllabusFee }),
+          ...(registrationFee && {
+            "balance.registrationFee": -registrationFee
+          }),
+          ...(lateFine && { "balance.lateFine": -lateFine }),
+          ...(notesBalance && { "balance.notesBalancec": -notesBalance }),
+          ...(missalaneousBalance && {
+            "balance.missalaneousBalance": -missalaneousBalance
+          }),
+          ...(testSessionFee && { "balance.testSessionFee": -testSessionFee }),
+          ...(discountFee && { "balance.discountFee": -discountFee })
         }
       },
       {

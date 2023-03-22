@@ -36,16 +36,16 @@ const studentSchema = new mongoose.Schema(
       type: String,
       requied: true
     },
-    batch: {
+    /*batch: {
       type: String,
       required: true
     },
     dubata: {
       type: String,
       required: true
-    },
+    },*/
     fee: {
-      schoolFee: {
+      tutionFee: {
         type: Number
       },
       syllabusFee: {
@@ -54,12 +54,13 @@ const studentSchema = new mongoose.Schema(
       annualFee: {
         type: Number
       },
-      registrationFee: {
+
+      testSessionFee: {
         type: Number
       }
     },
     balance: {
-      schoolFee: {
+      tutionFee: {
         type: Number
       },
       syllabusFee: {
@@ -72,6 +73,18 @@ const studentSchema = new mongoose.Schema(
         type: Number
       },
       lateFine: {
+        type: Number
+      },
+      notesBalance: {
+        type: Number
+      },
+      missalaneousBalance: {
+        type: Number
+      },
+      registrationFee: {
+        type: Number
+      },
+      testSessionFee: {
         type: Number
       }
     }

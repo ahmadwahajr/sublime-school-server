@@ -1,4 +1,4 @@
-const { Fee } = require("../models/feeModel");
+const { Fee } = require("../models/feeHistoryModel");
 const AppError = require("../utils/appError");
 exports.createFee = async req => {
   console.log("REQUEST:", req);
