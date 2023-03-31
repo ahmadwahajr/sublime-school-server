@@ -138,7 +138,7 @@ exports.payFee = async (req, res, next) => {
             "balance.registrationFee": -registrationFee
           }),
           ...(lateFine && { "balance.lateFine": -lateFine }),
-          ...(notesBalance && { "balance.notesBalancec": -notesBalance }),
+          ...(notesBalance && { "balance.notesBalance": -notesBalance }),
           ...(missalaneousBalance && {
             "balance.missalaneousBalance": -missalaneousBalance
           }),
