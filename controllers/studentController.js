@@ -143,7 +143,8 @@ exports.payFee = async (req, res, next) => {
             "balance.missalaneousBalance": -missalaneousBalance
           }),
           ...(testSessionFee && { "balance.testSessionFee": -testSessionFee }),
-          ...(discountFee && { "balance.discountFee": -discountFee })
+          ...(discountFee && { "balance.discountFee": -discountFee }),
+          ...(annualFee && { "balance.annualFee": -annualFee })
         }
       },
       {
