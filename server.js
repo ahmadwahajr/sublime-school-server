@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { myfunction }  = require("./cronjobs/addTuitionFee")
 // const server = require("./socket");
 const dotenv = require("dotenv");
 
@@ -25,7 +26,7 @@ exports.mongoConnection = mongoose
     return con;
   })
   .catch(err => console.log(err));
-
+  console.log(myfunction)
 // Start the server
 const port = process.env.PORT;
 app.listen(port, () => {

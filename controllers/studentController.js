@@ -1,6 +1,7 @@
 const { Student } = require("../models/studentsModel");
 const AppError = require("../utils/appError");
 const feeHelper = require("../helpers/feeHelper");
+const { default: mongoose } = require("mongoose");
 exports.addStudent = async (req, res, next) => {
   const {
     name,
@@ -127,6 +128,9 @@ exports.payFee = async (req, res, next) => {
     testSessionFee,
     discountFee
   );
+  //Start transaction
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     let data = await Student.findByIdAndUpdate(
       req.body._id,
@@ -162,8 +166,10 @@ exports.payFee = async (req, res, next) => {
         isPaid: true
       };
 
-      const payFee = await feeHelper.createFee(feeHistoryData);
+      const payFee = await feeHelper.createFee(feeHistoryData,session);
       if (payFee) {
+        //commit transaction
+        await session.commitTransaction();
         return res.status(200).json({
           status: "success",
           studentData: data,
@@ -176,7 +182,12 @@ exports.payFee = async (req, res, next) => {
       next(new Error("Error in Fee Payment!"));
     }
   } catch (err) {
+    //Roll back transaction
+    await session.abortTransaction();
     next(new Error("Internal Error!"));
+  } finally{
+    //End session
+    session.endSession();
   }
 };
 exports.deleteStudent = async (req, res, next) => {
