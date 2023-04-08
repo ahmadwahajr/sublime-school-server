@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
-const { myfunction }  = require("./cronjobs/addTuitionFee")
+const { addTutionFee } = require("./cronjobs/addTuitionFee");
 // const server = require("./socket");
 const dotenv = require("dotenv");
 
 dotenv.config({
   path: "./config.env"
 });
+// console.log("addTution:", addTutionFee);
 
 process.on("uncaughtException", err => {
   console.log("UNCAUGHT EXCEPTION!!! shutting down...");
@@ -23,10 +24,11 @@ exports.mongoConnection = mongoose
   })
   .then(con => {
     console.log("DB connection Successfully!");
+    addTutionFee.start();
     return con;
   })
   .catch(err => console.log(err));
-  console.log(myfunction)
+
 // Start the server
 const port = process.env.PORT;
 app.listen(port, () => {
