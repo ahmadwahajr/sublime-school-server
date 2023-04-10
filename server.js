@@ -7,8 +7,7 @@ const dotenv = require("dotenv");
 dotenv.config({
   path: "./config.env"
 });
- //console.log("addTution:", addTutionFee);
-// console.log("addlatefine:",addLateFine);
+// console.log("addTution:", addTutionFee);
 
 process.on("uncaughtException", err => {
   console.log("UNCAUGHT EXCEPTION!!! shutting down...");
