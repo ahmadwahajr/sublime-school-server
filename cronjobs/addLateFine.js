@@ -1,33 +1,31 @@
-const cron = require('node-cron');
-const Student = require('../models/studentsModel');
-
-const addLateFine = cron.schedule('0 0 11-31 * *', async () => {
+const cron = require("node-cron");
+const { Student } = require("../models/studentsModel");
+const { Fee } = require("../models/feeHistoryModel");
+const Fine = 50;
+const addLateFine = cron.schedule("* * 11-31 * *", async () => { // Cron job runs daily from 11th to 31st of every month
   try {
-    // Get the current month
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
+    //const currentDate = new Date();
+    const unpaidStudents = await Fee.distinct("studentId", { isPaid: false }); // Get distinct studentIds from feeHistory where isPaid is false
 
-    // Find students whose fees are late for the current month
-    const lateStudents = await Student.find({
-      'balance.tutionFee.month': currentMonth,
-      'balance.tutionFee.isPaid': false,
-      'balance.tutionFee.lateFine': { $exists: false },
-      'balance.tutionFee.dueDate': { $lt: currentDate }
-    });
+    const data = await Student.updateMany(
+      { _id: { $in: unpaidStudents } }, // Update students whose _id is in the array of unpaidStudents
+      [
 
-    // Loop through each late student and add a late fine of 50 rupees to their balance
-    for (let student of lateStudents) {
-      const lateFee = 50;
-      //The tutionFeeIndex variable is then set to the index of the current month's tuition fee in the student's balance.tutionFee array using the findIndex() method.
-      const tutionFeeIndex = student.balance.tutionFee.findIndex(item => item.month === currentMonth);
-      student.balance.tutionFee[tutionFeeIndex].lateFine = lateFee;
-      student.balance.tutionFee[tutionFeeIndex].amount += lateFee;
-      await Student.findByIdAndUpdate(student._id, student);
-      console.log(`Late fee of ${lateFee} added to ${student.name}'s balance for month ${currentMonth}`);
-    }
+        {
+            $addFields: {
+              "balance.lateFine": { 
+                $sum: ["$balance.lateFine", Fine],
+                
+            }
+           
+            }
+        }
+      ]
+    ).exec();
+    console.log("Late fine added successfully", data);
   } catch (error) {
-    console.error(error);
+    console.log("Got Error", error);
   }
 });
 
-module.exports = addLateFine;
+module.exports = { addLateFine };
