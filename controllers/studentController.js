@@ -1,6 +1,8 @@
 const { Student } = require("../models/studentsModel");
+const { Fee } = require("../models/feeHistoryModel");
 const AppError = require("../utils/appError");
 const feeHelper = require("../helpers/feeHelper");
+const { default: mongoose } = require("mongoose");
 exports.addStudent = async (req, res, next) => {
   const {
     name,
@@ -39,7 +41,7 @@ exports.addStudent = async (req, res, next) => {
     });
 
     if (student) {
-      //const feeDetails = await feeHelper.getFee(student._id);
+      const feeDetails = await feeHelper.getFee(student._id);
 
       let studentWithFee = { studentData: student, feeDetails: {} };
       res.status(200).json({
@@ -104,6 +106,50 @@ exports.updateStudent = async (req, res, next) => {
     next(new Error("Something went wrong"));
   }
 };
+
+// exports.payFee = async (req, res, next) => {
+//   const session = await mongoose.startSession();
+//   // const fee = session.getDatabase("sublime").fees;
+//   // const students = session.getDatabase("sublime").students;
+//   try {
+//     session.startTransaction({
+//       readConcern: { level: "snapshot" },
+//       writeConcern: { w: "majority" }
+//     });
+//     const feeHistoryData = {
+//       student: req.body._id,
+//       month: new Date(req.body.payDate).getMonth(),
+//       date: new Date(req.body.payDate).getDate(),
+//       year: new Date(req.body.payDate).getFullYear(),
+//       payment: req.body.balance,
+//       isPaid: true
+//     };
+//     await session.withTransaction(async () => {
+//       const [user, account] = await Promise.all([
+//         students.findByIdAndUpdate(req.body._id, {
+//           $inc: {
+//             ...(req.body.balance.tutionFee && {
+//               "balance.tutionFee": -req.body.balance.tutionFee
+//             })
+//           }
+//         }),
+//         fee.create(feeHistoryData)
+//       ]);
+//     });
+//     await session.commitTransaction();
+//     res.status(200).json({
+//       status: "success",
+//       studentData: data,
+//       feeDetails: {}
+//     });
+//   } catch (error) {
+//     console.log("ERROR", error);
+//     session.abortTransaction();
+//     next(new Error("Error in ending!"));
+//   } finally {
+//     session.endSession();
+//   }
+// };
 exports.payFee = async (req, res, next) => {
   const {
     tutionFee,
@@ -117,55 +163,67 @@ exports.payFee = async (req, res, next) => {
     discountFee,
     payDate
   } = req.body.balance;
-  try {
-    let data = await Student.findByIdAndUpdate(
-      req.body._id,
-      {
-        $inc: {
-          ...(tutionFee && { "balance.tutionFee": -tutionFee }),
-          ...(syllabusFee && { "balance.syllabusFee": -syllabusFee }),
-          ...(registrationFee && {
-            "balance.registrationFee": -registrationFee
-          }),
-          ...(lateFine && { "balance.lateFine": -lateFine }),
-          ...(notesBalance && { "balance.notesBalance": -notesBalance }),
-          ...(missalaneousBalance && {
-            "balance.missalaneousBalance": -missalaneousBalance
-          }),
-          ...(testSessionFee && { "balance.testSessionFee": -testSessionFee }),
-          ...(discountFee && { "balance.discountFee": -discountFee }),
-          ...(annualFee && { "balance.annualFee": -annualFee })
-        }
-      },
-      {
-        new: true,
-        runValidators: true
-      }
-    );
-    if (data) {
-      const feeHistoryData = {
-        student: req.body._id,
-        month: new Date().getMonth(),
-        date: new Date().getDate(),
-        year: new Date().getFullYear(),
-        payment: req.body.balance,
-        isPaid: true
-      };
 
-      const payFee = await feeHelper.createFee(feeHistoryData);
-      if (payFee) {
+  try {
+    // session.startTransaction();
+    // await session.withTransaction(async () => {
+    const feeHistoryData = {
+      student: req.body._id,
+      month: new Date(req.body.payDate).getMonth(),
+      date: new Date(req.body.payDate).getDate(),
+      year: new Date(req.body.payDate).getFullYear(),
+      payment: req.body.balance,
+      isPaid: true
+    };
+
+    const payFees = await feeHelper.createFee(feeHistoryData);
+    if (payFees) {
+      let data = await Student.findByIdAndUpdate(
+        req.body._id,
+        {
+          $inc: {
+            ...(tutionFee && { "balance.tutionFee": -tutionFee }),
+            ...(syllabusFee && { "balance.syllabusFee": -syllabusFee }),
+            ...(registrationFee && {
+              "balance.registrationFee": -registrationFee
+            }),
+            ...(lateFine && { "balance.lateFine": -lateFine }),
+            ...(notesBalance && { "balance.notesBalance": -notesBalance }),
+            ...(missalaneousBalance && {
+              "balance.missalaneousBalance": -missalaneousBalance
+            }),
+            ...(testSessionFee && {
+              "balance.testSessionFee": -testSessionFee
+            }),
+            ...(discountFee && { "balance.discountFee": -discountFee }),
+            ...(annualFee && { "balance.annualFee": -annualFee })
+          }
+        },
+        {
+          new: true,
+          runValidators: true
+        }
+      );
+      if (data) {
+        // await session.commitTransaction();
+        // await session.endSession();
         return res.status(200).json({
           status: "success",
           studentData: data,
-          feeDetails: payFee
+          feeDetails: payFees
         });
       } else {
-        next(new Error("Fee Paid but not added to history!"));
+        // await session.abortTransaction();
+        // await session.endSession();
+        next(new Error("Error in Fee Payment!"));
       }
     } else {
-      next(new Error("Error in Fee Payment!"));
+      // await session.abortTransaction();
+      // await session.endSession();
+      next(new Error("Fee Already Paid!"));
     }
   } catch (err) {
+    console.log(err);
     next(new Error("Internal Error!"));
   }
 };

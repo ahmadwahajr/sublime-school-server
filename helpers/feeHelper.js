@@ -1,7 +1,6 @@
 const { Fee } = require("../models/feeHistoryModel");
 const AppError = require("../utils/appError");
 exports.createFee = async req => {
-  console.log("REQUEST:", req);
   try {
     const fee = await Fee.create({
       ...req

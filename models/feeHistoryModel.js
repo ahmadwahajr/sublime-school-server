@@ -20,7 +20,6 @@ const feeSchema = new mongoose.Schema(
       required: true
     },
     payment: {
-      
       annualFee: {
         type: Number
       },
@@ -30,22 +29,22 @@ const feeSchema = new mongoose.Schema(
       lateFine: {
         type: Number
       },
-      discountFee:{
+      discountFee: {
         type: Number
       },
-      tutionFee:{
+      tutionFee: {
         type: Number
       },
       syllabusFee: {
         type: Number
       },
-      notesBalance:{
+      notesBalance: {
         type: Number
       },
       missalaneousBalance: {
         type: Number
       },
-      testSessionFee:{
+      testSessionFee: {
         type: Number
       }
     },
@@ -59,6 +58,6 @@ const feeSchema = new mongoose.Schema(
     timestamps: true,
     createdAt: "created_at"
   }
-);
+).index({ month: 1, year: 1, student: 1 }, { unique: true });
 const Fee = mongoose.model("Fee", feeSchema);
 module.exports = { Fee };
