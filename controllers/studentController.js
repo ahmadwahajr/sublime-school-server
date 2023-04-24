@@ -160,7 +160,8 @@ exports.payFee = async (req, res, next) => {
     notesBalance,
     missalaneousBalance,
     testSessionFee,
-    discountFee
+    discountFee,
+    payDate
   } = req.body.balance;
 
   try {
