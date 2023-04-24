@@ -145,9 +145,9 @@ exports.payFee = async (req, res, next) => {
     if (data) {
       const feeHistoryData = {
         student: req.body._id,
-        month: new Date(payDate).getMonth(),
-        date: new Date(payDate).getDate(),
-        year: new Date(payDate).getFullYear(),
+        month: new Date().getMonth(),
+        date: new Date().getDate(),
+        year: new Date().getFullYear(),
         payment: req.body.balance,
         isPaid: true
       };
