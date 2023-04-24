@@ -8,7 +8,6 @@ dotenv.config({
   path: "./config.env"
 });
 // console.log("addTution:", addTutionFee);
-// console.log("addlatefine:",addLateFine);
 
 process.on("uncaughtException", err => {
   console.log("UNCAUGHT EXCEPTION!!! shutting down...");
