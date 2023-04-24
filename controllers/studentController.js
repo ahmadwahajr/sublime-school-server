@@ -219,7 +219,7 @@ exports.payFee = async (req, res, next) => {
     } else {
       // await session.abortTransaction();
       // await session.endSession();
-      next(new Error("Fee Already Paid or Error added in history!"));
+      next(new Error("Fee Already Paid!"));
     }
   } catch (err) {
     console.log(err);

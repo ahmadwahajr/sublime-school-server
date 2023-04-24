@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const { addTutionFee } = require("./cronjobs/addTuitionFee");
-const { addLateFine } = require("./cronjobs/addLateFine");
+// const { addTutionFee } = require("./cronjobs/addTuitionFee");
+// const { addLateFine } = require("./cronjobs/addLateFine");
 // const server = require("./socket");
 const dotenv = require("dotenv");
 
