@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { addTutionFee } = require("./cronjobs/addTuitionFee");
-const { addLateFine } = require ("./cronjobs/addLateFine");
+const { addLateFine } = require("./cronjobs/addLateFine");
 // const server = require("./socket");
 const dotenv = require("dotenv");
 
@@ -25,8 +25,8 @@ exports.mongoConnection = mongoose
   })
   .then(con => {
     console.log("DB connection Successfully!");
-    addTutionFee.start();
-    addLateFine.start();
+    // addTutionFee.start();
+    // addLateFine.start();
     return con;
   })
   .catch(err => console.log(err));
