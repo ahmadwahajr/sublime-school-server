@@ -14,7 +14,7 @@ const AppError = require("./utils/appError");
 const app = express();
 
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://sublime-school.netlify.app"],
+  origin: ["http://localhost:5173", "https://sublime-school.netlify.app"],
   optionsSuccessStatus: 200, // For legacy browser support
   methods: "GET, PUT, POST, DELETE"
 };
